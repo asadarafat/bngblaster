@@ -1,9 +1,11 @@
 name: Build
 
-on:
-  push:
-    paths-ignore:
-    - 'docs/**'
+# on:
+#   push:
+#     paths-ignore:
+#     - 'docs/**'
+
+on: [workflow_dispatch]
 
 env:
   BUILD_TYPE: Release
