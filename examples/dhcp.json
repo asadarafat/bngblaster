@@ -1,0 +1,30 @@
+{
+  "interfaces": {
+    "access": [
+      {
+        "__comment__": "DHCP Client 1",
+        "interface": "eth1",
+        "type": "ipoe",
+        "ipv6": "false",
+        "vlan-mode": "1:1",
+        "outer-vlan-min": 1000,
+        "outer-vlan-max": 1000,
+        "outer-vlan-step": 1,
+        "inner-vlan-min": 1,
+        "inner-vlan-max": 20,
+        "inner-vlan-step": 1,
+        "mac": "{random:mac}"
+        }
+    ]
+  },
+  "dhcp": {
+    "enable": true
+  },
+  "dhcpv6": { 
+    "enable": false 
+  },
+  "access-line": {
+    "agent-remote-id": "7750bng-sub.{session-global}",
+    "agent-circuit-id": "0.0.0.0/0.0.0.0 eth 1:{session-global}"
+  }
+}
