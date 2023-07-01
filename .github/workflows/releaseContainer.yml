@@ -1,4 +1,4 @@
-name: ReleaseContainer
+name: Docker Image CI
 
 on: [workflow_dispatch]
 
@@ -7,82 +7,33 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  release:
-    name: Create Release
+  build-and-push-image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-    - name: Get Ref Names
-      id: ref_name
-      run: |
-          echo "SOURCE_NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
-          echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
-          echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - uses: actions/checkout@v3
-    - uses: ncipollo/release-action@v1
-      with:
-        tag: ${{ steps.ref_name.outputs.SOURCE_TAG }}
-        body: "RtBrick BNG Blaster Version ${{ steps.ref_name.outputs.SOURCE_TAG }}"
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  build:
-    name: Build Release ${{matrix.os}}
-    needs: [release]
-    runs-on: ${{matrix.os}}
-    strategy:
-      matrix:
-        os: [ubuntu-20.04, ubuntu-22.04]
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Download RtBrick libdict
-      shell: bash
-      run: wget https://github.com/rtbrick/libdict/releases/download/v1.0.1/libdict-debian.zip
-
-    - name: Install RtBrick libdict
-      shell: bash
-      run: unzip libdict-debian.zip; sudo dpkg -i libdict_1.0.1_amd64.deb; sudo dpkg -i libdict-dev_1.0.1_amd64.deb
-
-    - name: Install Dependencies
-      shell: bash
-      run: sudo apt install -y libcunit1-dev libncurses-dev libssl-dev libjansson-dev libcmocka-dev libpcap-dev
-
-    - name: Get Ref Names
-      id: ref_name
-      run: |
-          echo "SOURCE_NAME=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
-          echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
-          echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
-    - name: Set export SOURCE_DATE_EPOCH to git commit time
-      run: |
-          echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> $GITHUB_ENV
-
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{ github.workspace }}/build
-
-    - name: Configure CMake
-      shell: bash
-      working-directory: ${{ github.workspace }}/build
-      run: cmake $GITHUB_WORKSPACE -DBNGBLASTER_VERSION=${{ steps.ref_name.outputs.SOURCE_TAG }} -DBNGBLASTER_TESTS=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBNGBLASTER_OS=${{matrix.os}}
-
-    - name: Build
-      working-directory: ${{ github.workspace }}/build
-      shell: bash
-      run: cmake --build . --config $BUILD_TYPE
-
-    - name: Test
-      working-directory: ${{ github.workspace }}/build
-      shell: bash
-      run: ctest -C $BUILD_TYPE
-
-    - name: Package
-      working-directory: ${{github.workspace}}/build
-      shell: bash
-      run: cpack -G DEB
-
-    - uses: actions/upload-artifact@v3
-      with:
-        name: Save Build Artifact
-        path: ./dist
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
