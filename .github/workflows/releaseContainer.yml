@@ -84,10 +84,7 @@ jobs:
       shell: bash
       run: cpack -G DEB
 
-    - name: Upload Debian Package
-      uses: svenstaro/upload-release-action@v2
+    - uses: actions/upload-artifact@v3
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: build/bngblaster_${{ steps.ref_name.outputs.SOURCE_TAG }}_amd64.deb
-        asset_name: bngblaster-${{ steps.ref_name.outputs.SOURCE_TAG }}-${{ matrix.os }}_amd64.deb
-        tag: ${{ steps.ref_name.outputs.SOURCE_TAG }}
+        name: Save Build Artifact
+        path: ./dist
