@@ -29,4 +29,4 @@ COPY ./examples /opt/bngblaster/
 #expose port 
 EXPOSE 8080 22
 
-ENTRYPOINT [ "/opt/bngblaster" ]
+# ENTRYPOINT [ "/opt/bngblaster" ]
