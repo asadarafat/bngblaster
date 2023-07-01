@@ -1,12 +1,10 @@
 name: ReleaseContainer
 
-on:
-  push:
-    tags:
-      - "[0-9]+.[0-9]+.[0-9]+"
+on: [workflow_dispatch]
 
 env:
-  BUILD_TYPE: Release
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   release:
