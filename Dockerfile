@@ -22,7 +22,7 @@ RUN service ssh start
 
 # Get and install BngBlaster
 RUN wget -O /tmp/bngblaster-0.8.22-ubuntu-22.04_amd64.deb https://github.com/rtbrick/bngblaster/releases/download/0.8.22/bngblaster-0.8.22-ubuntu-22.04_amd64.deb
-RUN apt-get install /tmp/bngblaster-0.8.22-ubuntu-22.04_amd64.deb
+RUN apt-get install -y /tmp/bngblaster-0.8.22-ubuntu-22.04_amd64.deb
 
 # Create /opt/bngblaster
 RUN mkdir /opt/bngblaster
