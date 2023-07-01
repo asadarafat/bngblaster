@@ -27,7 +27,7 @@ RUN apt-get install -y /tmp/bngblaster-0.8.22-ubuntu-22.04_amd64.deb
 RUN mkdir /opt/bngblaster
 
 # Copy bngblaster config file example folder
-COPY ./example /opt/bngblaster/example
+COPY ./examples /opt/bngblaster/
 
 #expose port 
 EXPOSE 8080 22
