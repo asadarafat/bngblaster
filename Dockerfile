@@ -29,4 +29,4 @@ COPY ./examples /opt/bngblaster/
 #expose port 
 EXPOSE 8080 22
 
-ENTRYPOINT [ "service ssh restart && /bin/bash" ]
+ENTRYPOINT [ "service ssh restart", "/bin/bash" ]
