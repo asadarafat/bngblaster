@@ -12,16 +12,18 @@
         "outer-vlan-step": 1,
         "inner-vlan-min": 1,
         "inner-vlan-max": 20,
-        "inner-vlan-step": 1,
-        "mac": "{random:mac}"
+        "inner-vlan-step": 1
         }
     ]
   },
   "dhcp": {
-    "enable": true
+    "enable": true,
+    "broadcast": false
   },
   "dhcpv6": { 
-    "enable": false 
+    "enable": false,
+    "ia-na": false,
+    "ia-pd": false 
   },
   "access-line": {
     "agent-remote-id": "7750bng-sub.{session-global}",
