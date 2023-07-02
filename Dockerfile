@@ -4,6 +4,7 @@ FROM ubuntu:latest
 WORKDIR ./opt/bngblaster
 
 USER root:root
+RUN echo 'root:admin' | chpasswd
 
 # add users
 RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1001 suuser 
