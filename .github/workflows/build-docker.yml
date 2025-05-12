@@ -65,13 +65,11 @@ jobs:
               usermod -aG sudo admin && \
               echo "admin ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-          COPY *.deb /root/bngblaster.deb
-
           # Get and install BngBlaster
           RUN wget -O /tmp/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb https://github.com/rtbrick/bngblaster/releases/download/$TAG_NAME/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb
           RUN apt-get install -y /tmp/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb
 
-          # COPY /examples /opt/bngblaster/
+          COPY /examples /opt/bngblaster/
 
           ENTRYPOINT bash
           EOF
