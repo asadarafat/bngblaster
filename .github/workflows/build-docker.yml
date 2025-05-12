@@ -39,7 +39,8 @@ jobs:
       - name: Generate Dockerfile dynamically
         run: |
           cat <<EOF > Dockerfile
-          FROM ubuntu-latest
+          
+          FROM ubuntu:latest
 
           USER root:root
           RUN echo 'root:admin' | chpasswd
