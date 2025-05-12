@@ -80,9 +80,19 @@ jobs:
           cat <<EOF > Dockerfile
           FROM debian:bullseye-slim
 
+          USER root:root
+          RUN echo 'root:admin' | chpasswd
+
+          WORKDIR ./opt/bngblaster
+
           RUN apt-get update && \
-              apt-get install -y sudo iproute2 iputils-ping && \
+              apt-get install -y sudo iproute2 iputils-ping openssh-server && \
               apt-get clean && rm -rf /var/lib/apt/lists/*
+
+          # Config SSH
+          RUN echo "HostKeyAlgorithms ssh-dss,ecdsa-sha2-nistp256,ssh-ed25519" >> /etc/ssh/ssh_config    
+          RUN echo "KexAlgorithms diffie-hellman-group1-sha1,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group14-sha1" >> /etc/ssh/ssh_config    
+          RUN service ssh restart
 
           # Create admin user with sudo access
           RUN useradd -m -s /bin/bash admin && \
@@ -95,10 +105,7 @@ jobs:
           RUN dpkg -i /tmp/bngblaster.deb || apt-get update && apt-get install -f -y && \
               rm -rf /var/lib/apt/lists/* /tmp/*.deb
 
-          USER admin
-          WORKDIR /home/admin
-
-          ENTRYPOINT ["bngblaster"]
+          ENTRYPOINT ["service ssh restart && bash"]
           EOF
 
       - name: Log in to GitHub Container Registry
