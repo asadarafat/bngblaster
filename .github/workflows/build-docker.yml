@@ -61,7 +61,7 @@ jobs:
 
           # Get and install BngBlaster
           RUN wget -O /tmp/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb https://github.com/rtbrick/bngblaster/releases/download/$TAG_NAME/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb
-          RUN apt-get install -y /tmp/bngblaster-$TAG_NAME-ubuntu-22.04_amd64.deb
+          RUN apt-get install -y /tmp/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb
 
           ENTRYPOINT bash
           EOF
