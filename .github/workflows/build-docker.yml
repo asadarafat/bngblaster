@@ -35,8 +35,6 @@ jobs:
           echo "✅ Using tag: $TAG_NAME"
           echo "version=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      - name: Copy DEB to build context
-        run: cp ${{ github.workspace }}/build/*.deb ${{ github.workspace }}
 
       - name: Generate Dockerfile dynamically
         run: |
