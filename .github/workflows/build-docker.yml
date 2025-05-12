@@ -74,6 +74,9 @@ jobs:
           echo "✅ Using tag: $TAG_NAME"
           echo "version=$TAG_NAME" >> $GITHUB_OUTPUT
 
+      - name: Copy DEB to build context
+        run: cp ${{ github.workspace }}/build/*.deb ${{ github.workspace }}
+
 
       - name: Generate Dockerfile dynamically
         run: |
@@ -100,10 +103,10 @@ jobs:
               usermod -aG sudo admin && \
               echo "admin ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-          COPY build/*.deb /tmp/bngblaster.deb
+          COPY *.deb /root/bngblaster.deb
 
-          RUN dpkg -i /tmp/bngblaster.deb || apt-get update && apt-get install -f -y && \
-              rm -rf /var/lib/apt/lists/* /tmp/*.deb
+          RUN dpkg -i /root/bngblaster.deb || apt-get update && apt-get install -f -y && \
+              rm -rf /var/lib/apt/lists/*
 
           ENTRYPOINT bash
           EOF
