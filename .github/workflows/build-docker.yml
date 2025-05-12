@@ -35,11 +35,13 @@ jobs:
           echo "✅ Using tag: $TAG_NAME"
           echo "version=$TAG_NAME" >> $GITHUB_OUTPUT
 
+      - name: Copy DEB to build context
+        run: cp ${{ github.workspace }}/build/*.deb ${{ github.workspace }}
+
       - name: Generate Dockerfile dynamically
         run: |
-          TAG_NAME="${{ steps.vars.outputs.version }}"
           cat <<EOF > Dockerfile
-          FROM ubuntu:latest
+          FROM ubuntu-latest
 
           USER root:root
           RUN echo 'root:admin' | chpasswd
@@ -47,7 +49,7 @@ jobs:
           WORKDIR ./opt/bngblaster
 
           RUN apt-get update && \
-              apt-get install -y sudo iproute2 iputils-ping openssh-server iproute2 iputils-ping vim wget && \
+              apt-get install -y sudo iproute2 iputils-ping openssh-server libcunit1-dev libncurses-dev libssl-dev libjansson-dev libcmocka-dev libpcap-dev jq && \
               apt-get clean && rm -rf /var/lib/apt/lists/*
 
           # Config SSH
@@ -61,13 +63,13 @@ jobs:
               usermod -aG sudo admin && \
               echo "admin ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+          COPY *.deb /root/bngblaster.deb
+
           # Get and install BngBlaster
-          RUN wget -O /tmp/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb https://github.com/rtbrick/bngblaster/releases/download/$TAG_NAME/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb
-          RUN apt-get install -y /tmp/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb
+          RUN wget -O /tmp/bngblaster-0.8.22-ubuntu-24.04_amd64.deb https://github.com/rtbrick/bngblaster/releases/download/0.8.22/bngblaster-0.8.22-ubuntu-24.04_amd64.deb
+          RUN apt-get install -y /tmp/bngblaster-0.8.22-ubuntu-24.04_amd64.deb
 
-          # Copy bngblaster config file example folder
-
-          COPY /examples /opt/bngblaster
+          COPY /examples /opt/bngblaster/
 
           ENTRYPOINT bash
           EOF
