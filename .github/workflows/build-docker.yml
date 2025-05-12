@@ -34,10 +34,13 @@ jobs:
 
           echo "✅ Using tag: $TAG_NAME"
           echo "version=$TAG_NAME" >> $GITHUB_OUTPUT
+          
 
 
       - name: Generate Dockerfile dynamically
         run: |
+          TAG_NAME="${{ steps.vars.outputs.version }}"
+
           cat <<EOF > Dockerfile
           
           FROM ubuntu:latest
@@ -65,10 +68,10 @@ jobs:
           COPY *.deb /root/bngblaster.deb
 
           # Get and install BngBlaster
-          RUN wget -O /tmp/bngblaster-0.8.22-ubuntu-24.04_amd64.deb https://github.com/rtbrick/bngblaster/releases/download/0.8.22/bngblaster-0.8.22-ubuntu-24.04_amd64.deb
-          RUN apt-get install -y /tmp/bngblaster-0.8.22-ubuntu-24.04_amd64.deb
+          RUN wget -O /tmp/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb https://github.com/rtbrick/bngblaster/releases/download/$TAG_NAME/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb
+          RUN apt-get install -y /tmp/bngblaster-$TAG_NAME-ubuntu-24.04_amd64.deb
 
-          COPY /examples /opt/bngblaster/
+          # COPY /examples /opt/bngblaster/
 
           ENTRYPOINT bash
           EOF
